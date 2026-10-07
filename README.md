@@ -108,7 +108,7 @@ Browse the catalog at [monit.ly](https://monit.ly).
 
 ## Related
 
-- [Monitly REST API](https://monit.ly/api-docs)
+- [Monitly REST API](https://monit.ly/api-docs) – OpenAPI spec: [`openapi/v1.yaml`](openapi/v1.yaml)
 - [Compabase MCP](https://github.com/ContentWriterco/Compabase-MCP) – 3M+ Polish companies (KRS, CEIDG)
 
 ## License

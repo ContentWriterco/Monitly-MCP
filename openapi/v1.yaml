@@ -1,0 +1,327 @@
+openapi: 3.0.3
+info:
+  title: Monitly API
+  version: 1.0.0
+  description: |
+    One unified JSON API for official statistics and economic indicators from Eurostat,
+    World Bank, OECD, IMF, WHO and national statistical offices (150+ countries).
+    Search the dataset catalog, read metadata, pull time series with dimension, country and
+    period filters, get the latest data point, or render a chart as PNG.
+
+    **Authentication:** send `X-API-Key: <your_api_key>` (keys start with `mon_`).
+    Create a free account and key at https://monit.ly.
+
+    **Daily limits:** anonymous 3 requests, Essential (free account) 100, Pro 5,000.
+    Limits reset at midnight UTC.
+
+    Docs: https://monit.ly/api-docs · MCP server for AI agents: https://monit.ly/mcp-docs
+  contact:
+    name: Monitly
+    url: https://monit.ly
+    email: info@monit.ly
+  termsOfService: https://monit.ly/terms
+  x-logo:
+    url: https://monit.ly/logo1000px.png
+externalDocs:
+  description: Monitly API documentation
+  url: https://monit.ly/api-docs
+servers:
+  - url: https://monit.ly
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: Datasets
+    description: Catalog, metadata and time series
+  - name: Charts
+    description: Chart image generation
+paths:
+  /api/datasets:
+    get:
+      tags: [Datasets]
+      operationId: listDatasets
+      summary: List datasets
+      description: Lightweight catalog (id, dataset_name, last_update), sorted by id ascending.
+      parameters:
+        - name: country
+          in: query
+          description: Only datasets that include this geography (ISO code, e.g. PL).
+          schema: { type: string, example: PL }
+        - name: page
+          in: query
+          description: 0-based page number.
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: limit
+          in: query
+          description: Page size (recommended ≤ 1000).
+          schema: { type: integer, minimum: 1, default: 100 }
+      responses:
+        '200':
+          description: Dataset catalog page
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer, example: 168 }
+                        dataset_name: { type: string, example: House price index (2015 = 100) - quarterly data }
+                        last_update: { type: string, example: '2025-07-04T11:00:00+0200' }
+                  pagination: { $ref: '#/components/schemas/Pagination' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/datasets/{id}:
+    get:
+      tags: [Datasets]
+      operationId: getDataset
+      summary: Dataset details and data
+      description: Dataset fields plus all data in wide format, one block per series with rows of { period, values }.
+      parameters:
+        - $ref: '#/components/parameters/DatasetId'
+      responses:
+        '200':
+          description: Dataset with data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataset:
+                    type: object
+                    additionalProperties: true
+                    example: { id: 2973, dataset_code: lfsi_long_q, dataset_name: Labour market transitions - quarterly data, last_update: '2025-06-12', source_name: Eurostat }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/SeriesBlock' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/datasets/{id}/meta:
+    get:
+      tags: [Datasets]
+      operationId: getDatasetMeta
+      summary: Dataset metadata
+      description: Metadata only (source, URLs, dimension labels dim1..dim8, period range, available geographies). Null keys are omitted.
+      parameters:
+        - $ref: '#/components/parameters/DatasetId'
+      responses:
+        '200':
+          description: Dataset metadata
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DatasetMeta' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/datasets/{id}/latest:
+    get:
+      tags: [Datasets]
+      operationId: getDatasetLatest
+      summary: Latest data point
+      description: Only the most recent period with values per country and the dimension values.
+      parameters:
+        - $ref: '#/components/parameters/DatasetId'
+      responses:
+        '200':
+          description: Latest period
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataset:
+                    type: object
+                    additionalProperties: true
+                  latest_period:
+                    type: object
+                    properties:
+                      period: { type: string, example: Q2/2025 }
+                      countries:
+                        type: object
+                        additionalProperties: { type: string }
+                        example: { Austria: '41537.8', Poland: '79099.8' }
+                      dimensions:
+                        type: object
+                        additionalProperties: { type: string }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/datasets/{id}/data:
+    get:
+      tags: [Datasets]
+      operationId: getDatasetData
+      summary: Filtered time series
+      description: |
+        Filter by dimension labels (dim1..dim8, exact and case-sensitive), countries and periods.
+        Repeat a parameter for multiple values, e.g. `country=Austria&country=Poland`.
+        Periods use the dataset format: `1995`, `Q1/1995`, `01/2000` (URL-encode slashes).
+      parameters:
+        - $ref: '#/components/parameters/DatasetId'
+        - { name: dim1, in: query, schema: { type: array, items: { type: string } }, style: form, explode: true, example: [Quarterly] }
+        - { name: dim2, in: query, schema: { type: array, items: { type: string } }, style: form, explode: true }
+        - { name: dim3, in: query, schema: { type: array, items: { type: string } }, style: form, explode: true }
+        - { name: dim4, in: query, schema: { type: array, items: { type: string } }, style: form, explode: true }
+        - { name: dim5, in: query, schema: { type: array, items: { type: string } }, style: form, explode: true }
+        - { name: dim6, in: query, schema: { type: array, items: { type: string } }, style: form, explode: true }
+        - { name: dim7, in: query, schema: { type: array, items: { type: string } }, style: form, explode: true }
+        - { name: dim8, in: query, schema: { type: array, items: { type: string } }, style: form, explode: true }
+        - name: country
+          in: query
+          description: Country label as in the dataset; repeat for several.
+          schema: { type: array, items: { type: string } }
+          style: form
+          explode: true
+          example: [Austria, Poland]
+        - { name: period, in: query, description: Single period, schema: { type: string, example: '2024' } }
+        - { name: period_from, in: query, description: Inclusive start, schema: { type: string, example: Q1/1995 } }
+        - { name: period_to, in: query, description: Inclusive end, schema: { type: string, example: Q1/2025 } }
+        - { name: latest, in: query, description: Only the most recent period, schema: { type: boolean } }
+        - { name: followed, in: query, description: Only dimensions and countries your organization tracks, schema: { type: boolean } }
+      responses:
+        '200':
+          description: Filtered series with metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/SeriesBlock' }
+                  meta: { $ref: '#/components/schemas/DatasetMeta' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/charts/generate-png:
+    post:
+      tags: [Charts]
+      operationId: generateChartPng
+      summary: Generate a chart image
+      description: Render a line, bar, horizontal-bar or world-map chart from a dataset as PNG/JPEG (base64 or URL).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [datasetId, chartType]
+              properties:
+                datasetId: { type: integer, example: 2973 }
+                chartType: { type: string, enum: [line, bar, map, horizontal-bar] }
+                selectedDimensions:
+                  type: object
+                  additionalProperties: true
+                  example: { country: [Austria, Poland] }
+                dimensions_query: { type: string, description: 'Same format as /data query, e.g. dim1=Annual&dim2=...' }
+                period: { type: string, description: Single period for map / horizontal-bar }
+                seriesColors: { type: object, additionalProperties: { type: string } }
+                customLegendLabels: { type: object, additionalProperties: { type: string } }
+                customTitle: { type: string }
+                width: { type: integer, example: 800 }
+                height: { type: integer, example: 400 }
+                includeTitle: { type: boolean }
+                includeSource: { type: boolean }
+                includeDate: { type: boolean }
+                highlightLatest: { type: boolean }
+                showValues: { type: boolean }
+                showBorders: { type: boolean }
+                showLegend: { type: boolean }
+                mapLocation: { type: string, enum: [europe, asia, africa, north-america, south-america, oceania] }
+                additionalText: { type: string }
+                mapTransform:
+                  type: object
+                  properties:
+                    x: { type: number }
+                    y: { type: number }
+                    scale: { type: number }
+                format: { type: string, enum: [json, png, jpeg], default: json }
+      responses:
+        '200':
+          description: Chart image
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  base64: { type: string }
+                  url: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  parameters:
+    DatasetId:
+      name: id
+      in: path
+      required: true
+      description: Dataset id from /api/datasets
+      schema: { type: integer, example: 2973 }
+  schemas:
+    Pagination:
+      type: object
+      properties:
+        page: { type: integer }
+        limit: { type: integer }
+        total: { type: integer }
+        hasMore: { type: boolean }
+    SeriesBlock:
+      type: object
+      properties:
+        series_key:
+          type: object
+          additionalProperties: { type: string }
+          example: { dim1_value: Quarterly }
+        countries:
+          type: array
+          items: { type: string }
+        rows:
+          type: array
+          items:
+            type: object
+            properties:
+              period: { type: string, example: Q1/1995 }
+              values:
+                type: object
+                additionalProperties: { type: number }
+              unit: { type: string }
+    DatasetMeta:
+      type: object
+      additionalProperties: true
+      properties:
+        id: { type: integer }
+        dataset_code: { type: string }
+        dataset_name: { type: string }
+        description: { type: string }
+        source_name: { type: string }
+        source_url: { type: string }
+        metadata_url: { type: string }
+        version: { type: string }
+        oldest_period: { type: string }
+        latest_period: { type: string }
+        last_update: { type: string }
+        available_geo:
+          type: array
+          items: { type: string }
+    Error:
+      type: object
+      properties:
+        statusCode: { type: integer }
+        statusMessage: { type: string }
+  responses:
+    BadRequest:
+      description: Invalid parameters
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Unauthorized:
+      description: Invalid or missing API key
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    NotFound:
+      description: Dataset not found
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    RateLimited:
+      description: Daily limit exceeded (resets at midnight UTC)
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
