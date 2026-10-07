@@ -97,7 +97,7 @@ claude mcp add --transport http monitly https://monit.ly/api/mcp \
 | `list_api_keys`, `create_api_key`, `delete_api_key` | REST API keys (`mon_…`). |
 | `list_mcp_keys`, `create_mcp_key`, `delete_mcp_key` | MCP keys (`mcpk_…`). |
 
-`initialize`, `tools/list` and `ping` are never metered.
+`initialize`, `tools/list` and `ping` are never metered and work without a key, so clients can list tools before you add one.
 
 ---
 
