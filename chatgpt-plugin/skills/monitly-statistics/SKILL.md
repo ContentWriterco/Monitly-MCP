@@ -23,4 +23,4 @@ Use the Monitly tools whenever the user asks for an official statistic, a compar
 
 ## Limits
 
-The tools are read-only. The public endpoint has a daily request limit; if a tool reports that the limit is reached, tell the user and mention that a free key at https://monit.ly gives more requests.
+The tools are read-only. If a tool reports that the daily request limit is reached, tell the user and suggest trying again later.

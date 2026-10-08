@@ -11,15 +11,26 @@
   "homepage": "https://monit.ly",
   "repository": "https://github.com/ContentWriterco/Monitly-MCP",
   "license": "MIT",
-  "keywords": ["statistics", "economics", "GDP", "inflation", "unemployment", "Eurostat", "OECD", "World Bank", "IMF", "open data"],
+  "keywords": [
+    "statistics",
+    "economics",
+    "GDP",
+    "inflation",
+    "unemployment",
+    "Eurostat",
+    "OECD",
+    "World Bank",
+    "IMF",
+    "open data"
+  ],
   "extensions": {
     "com.openai": {
       "interface": {
         "displayName": "Monitly",
         "shortDescription": "Global official statistics",
-        "longDescription": "Monitly gives ChatGPT access to more than 100,000 official statistical datasets for over 150 countries, collected from Eurostat, OECD, the World Bank, the IMF, WHO and national statistics offices.\n\nAsk for GDP, inflation, unemployment, wages, trade, public debt, population, health, education, energy or environment figures, compare countries, or follow a trend over time. Every answer is based on a named source dataset and period, so you can check the numbers on monit.ly.\n\nThe plugin is read-only and needs no account. A daily request limit applies; a free Monitly key raises it.",
+        "longDescription": "Monitly gives ChatGPT access to more than 100,000 official statistical datasets for over 150 countries, collected from Eurostat, OECD, the World Bank, the IMF, WHO and national statistics offices.\n\nAsk for GDP, inflation, unemployment, wages, trade, public debt, population, health, education, energy or environment figures, compare countries, or follow a trend over time. Every answer is based on a named source dataset and period, so you can check the numbers on monit.ly.\n\nThe plugin is read-only and works without an account.",
         "developerName": "Content Writer LLC",
-        "category": "Research",
+        "category": "Data & Analytics",
         "capabilities": [
           "Search 100,000+ official statistics datasets",
           "Inspect dataset dimensions and country coverage",
