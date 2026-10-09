@@ -131,3 +131,7 @@ This repository is also a Claude Code plugin (MCP server + skill):
 /plugin marketplace add ContentWriterco/Monitly-MCP
 /plugin install monitly@monitly-plugins
 ```
+
+## Setup guides
+
+Step-by-step setup guides for Claude, ChatGPT, Gemini, Grok, Le Chat, Perplexity, Cursor, VS Code and Claude Code: https://monit.ly/mcp/connect
