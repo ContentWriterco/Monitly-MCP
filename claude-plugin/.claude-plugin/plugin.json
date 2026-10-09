@@ -21,5 +21,8 @@
     "open-data",
     "mcp"
   ],
-  "privacyPolicyUrl": "https://monit.ly/privacy"
+  "privacyPolicyUrl": "https://monit.ly/privacy",
+  "supportUrl": "https://monit.ly/contact",
+  "termsOfServiceUrl": "https://monit.ly/terms",
+  "documentationUrl": "https://monit.ly/mcp/connect/claude"
 }
