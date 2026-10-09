@@ -122,3 +122,12 @@ gemini extensions install https://github.com/ContentWriterco/Monitly-MCP
 ```
 
 No account or key needed.
+
+## Claude Code plugin
+
+This repository is also a Claude Code plugin (MCP server + skill):
+
+```
+/plugin marketplace add ContentWriterco/Monitly-MCP
+/plugin install monitly@monitly-plugins
+```

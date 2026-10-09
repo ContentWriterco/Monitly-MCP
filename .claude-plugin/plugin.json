@@ -1,0 +1,24 @@
+{
+  "name": "monitly",
+  "version": "1.0.0",
+  "description": "Official statistics in Claude: 100,000+ datasets for 150+ countries from Eurostat, OECD, World Bank, IMF, WHO and national statistics offices. Read-only, no account needed.",
+  "author": {
+    "name": "Content Writer LLC",
+    "email": "bartosz@contentwriter.pl",
+    "url": "https://monit.ly"
+  },
+  "homepage": "https://monit.ly/mcp-docs",
+  "repository": "https://github.com/ContentWriterco/Monitly-MCP",
+  "license": "MIT",
+  "keywords": [
+    "statistics",
+    "economics",
+    "eurostat",
+    "oecd",
+    "world-bank",
+    "imf",
+    "who",
+    "open-data",
+    "mcp"
+  ]
+}

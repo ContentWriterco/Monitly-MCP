@@ -1,0 +1,19 @@
+{
+  "name": "monitly-plugins",
+  "owner": {
+    "name": "Content Writer LLC",
+    "email": "bartosz@contentwriter.pl"
+  },
+  "plugins": [
+    {
+      "name": "monitly",
+      "source": "./",
+      "description": "Official statistics in Claude: 100,000+ datasets for 150+ countries from Eurostat, OECD, World Bank, IMF, WHO and national statistics offices. Read-only, no account needed.",
+      "version": "1.0.0",
+      "homepage": "https://monit.ly/mcp-docs"
+    }
+  ],
+  "metadata": {
+    "description": "Official statistics in Claude: 100,000+ datasets for 150+ countries from Eurostat, OECD, World Bank, IMF, WHO and national statistics offices. Read-only, no account needed."
+  }
+}
