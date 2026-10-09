@@ -114,3 +114,11 @@ Browse the catalog at [monit.ly](https://monit.ly).
 ## License
 
 MIT for this repository (documentation and configuration). The Monitly service is subject to the [Monitly terms](https://monit.ly).
+
+## Gemini CLI
+
+```bash
+gemini extensions install https://github.com/ContentWriterco/Monitly-MCP
+```
+
+No account or key needed.

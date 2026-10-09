@@ -1,0 +1,11 @@
+{
+  "name": "monitly",
+  "version": "1.0.0",
+  "description": "Official statistics: 100,000+ datasets for 150+ countries from Eurostat, OECD, World Bank, IMF, WHO and national statistics offices.",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "monitly": {
+      "httpUrl": "https://monit.ly/api/mcp/public"
+    }
+  }
+}
